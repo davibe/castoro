@@ -1,0 +1,24 @@
+{
+  "name": "castoro",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "bin": {
+    "castoro": "lib/cli.js"
+  },
+  "scripts": {
+    "preinstall": "coffee -o lib -c src"
+  },
+  "author": "Davide Bertola (dade@dadeb.it)",
+  "dependencies": {
+    "chromecast-js": "*",
+    "coffee-script": "^1.9.2",
+    "express": "^4.10.2",
+    "fluent-ffmpeg": "^2.0.0-rc3",
+    "keypress": "^0.2.1",
+    "minimist": "^1.1.1",
+    "morgan": "^1.5.0",
+    "serve-static": "^1.7.1",
+    "srt2vtt": "^1.0.0"
+  }
+}
