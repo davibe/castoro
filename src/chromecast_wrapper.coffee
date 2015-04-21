@@ -53,12 +53,15 @@ class ChromecastWrapper
       if (status.playerState == 'PAUSED') then @unpause()
   seek: (amount) =>
     if not @connected then return console.log 'we are not connected'
-    @device.seek amount, -> console.log 'seek', arguments
+    @device.seek amount, (err, status) ->
+      if err then return console.error err
+      console.log 'seek ', amount, status.currentTime
   volumeSet: =>
     if not @connected then return console.log 'we are not connected'
     arg =
       level: @volume
-    @device.setVolume @volume, -> console.log 'volume set', arguments
+    @device.setVolume @volume, (err, res) ->
+      console.log 'volume set', res.level
   volumeUp: =>
     if not @connected then return console.log 'we are not connected'
     @volume += 0.1
