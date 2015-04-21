@@ -16,10 +16,10 @@ allowCrossDomain = (req, res, next) ->
   next()
 
 class HttpServer
-  constructor: (@input, @port, @mode) ->
+  constructor: (@input, @port, @mode, verbose) ->
     app = express()
     app.use allowCrossDomain
-    app.use logger()
+    if verbose then app.use logger()
     app.use @handle.bind(@)
     app.listen @port
   handle: (req, res, next) ->
@@ -31,6 +31,8 @@ class HttpServer
       return res.sendFile(@input)
     if @mode == 'stream-transcode'
       return @handleMediaStreamTranscode req, res, next
+    if @mode == 'transcode'
+      return res.sendFile('/tmp/target.mkv')
   handleSubtitles: (req, res, next) ->
     tryWith = (ext) =>
       subtitles = @input.split('.')
@@ -51,15 +53,13 @@ class HttpServer
         res.contentType ext
         res.send vtt
   handleMediaStreamTranscode: (req, res, next) ->
-    res.header 'Accept-Ranges', 'bytes'
-    res.status(206)
     ff = ffmpeg(@input, {})
     ff.inputOptions('-fix_sub_duration')
     ff.videoCodec('copy')
     ff.audioCodec('libfaac').audioBitrate('320k')
     ff.toFormat("matroska")
     ff.pipe(res, end: true)
-    ff.on 'start', (command) -> console.log command
+    ff.on 'start', (command) -> console.log "Launching ffmpeg: ", command
     ff.on 'error', (err) -> console.error err
 
 module.exports = HttpServer

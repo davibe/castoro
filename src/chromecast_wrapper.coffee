@@ -27,7 +27,7 @@ class ChromecastWrapper
         windowRoundedCornerRadius: 10 # radius in px
         windowType: 'NONE' # can be: "NONE", "NORMAL", "ROUNDED_CORNERS"
   deviceOn: (device) ->
-    console.log 'This device is on', device
+    console.log 'This device is on ', device.host
     @device = device
     @device.on 'connected', @deviceConnected.bind(@)
     @device.connect()
@@ -35,12 +35,11 @@ class ChromecastWrapper
     @connected = true
     console.log 'Chromecast connected'
     @play()
-
   play: (offset) =>
     offset = offset || 1
     if not @connected
       return console.log 'we are not connected'
-    console.log 'Going to play', @media
+    console.log 'Going to play', @media.url
     @device.play @media, offset, -> console.log 'play', arguments[0]
   pause: =>
     if not @connected then return console.log 'we are not connected'
@@ -72,6 +71,7 @@ class ChromecastWrapper
     try
       @device.getStatus cb
     catch e
+      console.error e
       cb {}
   quit: =>
     if @ff

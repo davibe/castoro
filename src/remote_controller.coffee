@@ -34,7 +34,7 @@ class RemoteController
         if key.shift
           seekAmount /= 10
         @player.seek -1 * seekAmount
-      if key.name == 'q'
+      if key.name == 'q' or key.name == 'c'
         @player.quit()
         process.exit()
 
