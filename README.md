@@ -67,6 +67,14 @@ Use keys to control playback/volume
 - key "q": Quit
 
 
+Notes
+-----
+
+I use this on OSX where I installed ffmpeg using Homebrew like this
+
+    brew install ffmpeg --with-faac --with-fdk-aac
+
+
 Todos
 -----
 
@@ -80,3 +88,5 @@ Pull requests are welcome
 - Automatically figure out appropriate ip
 - Support multiple chromecasts in the same network
 - Maybe create a user interface served with express 
+
+
