@@ -17,7 +17,7 @@ Usage
 
 Command line usage goes like this
 
-      mincast \
+      castoro \
         --ip [ip of your machine] \
         --mode [original|stream-transcode|transcode] \
         --input [path/to/file.mkv]

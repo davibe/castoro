@@ -15,7 +15,7 @@ conf =
   verbose: argv.verbose
 
 help = """
-  mincast --input path.to.file.mkv \
+  castoro --input path.to.file.mkv \
     --ip [ip of your machine] \
     --port [http port to use] \
     --mode [original|stream-transcode|transcode] \
