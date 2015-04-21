@@ -58,8 +58,10 @@ Use keys to control playback/volume
 
 - Up: Volume up
 - Down: Volume down
-- Left: RR
-- Right: FF
+- Left: RR (10 min)
+- Shift+Left: RR (1 min)
+- Right: FF (10 min)
+- Shift+Right: FF (1 min)
 - Space: Pause/Unpause
 - key "s": Print player status
 - key "q": Quit
