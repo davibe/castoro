@@ -19,7 +19,7 @@ help = """
     --ip [ip of your machine] \
     --port [http port to use] \
     --mode [original|stream-transcode|transcode] \
-    --cli-controller
+    --cli-controller \
     --verbose
     """
 
