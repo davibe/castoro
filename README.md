@@ -10,8 +10,15 @@ A commandline tool to cast local files to chromecast.
 Install
 -------
 
+You can user npm published version
+    
+    npm install -g castoro
+
+or roll one yourself from this repo
+
     npm install -g coffee-script
     cd [this repo]
+    npm run-script prepublish
     npm install -g
 
 

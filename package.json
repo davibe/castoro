@@ -1,6 +1,6 @@
 {
   "name": "castoro",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "A commandline tool to stream local files to Google Chromecast",
   "keywords": ["node", "coffee-script", "chromecast", "google", "video"],
   "author": "Davide Bertola <dade@dadeb.it>",
@@ -9,6 +9,7 @@
   "bin": {
     "castoro": "lib/cli.js"
   },
+  "files": ["lib"],
   "preferGlobal": true,
   "repository": {
     "type": "git",
@@ -18,7 +19,7 @@
     "url": "https://github.com/davibe/castoro/issues"
   },
   "scripts": {
-    "preinstall": "coffee -o lib -c src"
+    "prepublish": "coffee -o lib -c src"
   },
   "dependencies": {
     "chromecast-js": "*",
