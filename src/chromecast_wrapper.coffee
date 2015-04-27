@@ -7,6 +7,7 @@ class ChromecastWrapper
     @connected = false
     @browser.on 'deviceOn', @deviceOn.bind(@)
     @volume = 1.0
+    @status = null
     @media =
       url: "http://#{ip}:#{port}/target.mkv" # "http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4" #@uri
       subtitles: [
@@ -36,7 +37,7 @@ class ChromecastWrapper
     console.log 'Chromecast connected'
     @play()
   play: (offset) =>
-    offset = offset || 1
+    offset = offset || 0
     if not @connected
       return console.log 'we are not connected'
     console.log 'Going to play', @media.url
@@ -71,11 +72,13 @@ class ChromecastWrapper
     @volume -= 0.1
     @volumeSet()
   getStatus: (cb) =>
-    try
-      @device.getStatus cb
-    catch e
-      console.error e
-      cb {}
+    last = @getStatusLast || 0
+    elapsed = Date.now() - last
+    if elapsed < 3000 then return cb(@status)
+    onStatus = (status) ->
+      @status = status
+      cb(status)
+    @device.getStatus.bind(@)(cb)
   quit: =>
     if @ff
       cast.ff.kill()

@@ -25,32 +25,51 @@ help = """
 
 if conf.help then return console.log help
 
-chromecastWrapper = new ChromecastWrapper(conf.ip, conf.port)
-httpServer = new HttpServer conf.input, conf.port, conf.mode, conf.verbose
+class Manager
+  constructor: (conf) ->
+    @conf = conf
+    @chromecastWrapper = new ChromecastWrapper(conf.ip, conf.port)
+    @httpServer = new HttpServer conf.input, conf.port, conf.mode, conf.verbose
+    if conf.mode == 'transcode'
+      @httpServer.mode = 'stream-transcode'
+      @mediaTranscode()
 
-switchToTranscoded = () ->
-  chromecastWrapper.getStatus (status) ->
-    console.log 'Switching to transcoded file'
-    httpServer.mode = 'transcode'
-    chromecastWrapper.play status.currentTime
+    if conf.cli_controller
+      delayed = -> new RemoteController(@chromecastWrapper)
+      setTimeout delayed, 1000
 
-if conf.mode == 'transcode'
-  httpServer.mode = 'stream-transcode'
-  ffmpeg = require 'fluent-ffmpeg'
-  ff = ffmpeg(conf.input, {})
-  ff.inputOptions('-fix_sub_duration')
-  ff.inputOptions('-threads 16')
-  ff.videoCodec('copy')
-  ff.audioCodec('libfaac').audioBitrate('320k')
-  ff.toFormat("matroska")
-  ff.output('/tmp/target.mkv')
-  ff.on('end', switchToTranscoded)
-  ff.on('start', (command) -> console.log "Launching transcode: ", command)
-  ff.on('progress', (progress) -> console.log 'Transcoding progress', progress.percent )
-  ff.run()
+  mediaTranscode: ->
+    conf = @conf
+    ffmpeg = require 'fluent-ffmpeg'
+    ff = ffmpeg(conf.input, {})
+    ff.inputOptions('-fix_sub_duration')
+    ff.inputOptions('-threads 16')
+    ff.videoCodec('copy')
+    ff.audioCodec('libfaac').audioBitrate('320k')
+    ff.toFormat("matroska")
+    ff.output('/tmp/target.mkv')
+    ff.on('end', @switchToTranscoded.bind(@))
+    ff.on('start', (command) -> console.log "Launching transcode: ", command)
+    ff.on('progress', (progress) -> console.log 'Transcoding progress', progress.percent )
+    ff.run()
 
-if conf.cli_controller
-  delayed = -> new RemoteController(chromecastWrapper)
-  setTimeout delayed, 1000
+  switchToTranscoded: ->
+    self = @
+    @chromecastWrapper.getStatus (status) ->
+      console.log 'Switching to transcoded file'
+      @httpServer.mode = 'transcode'
+      self.chromecastWrapper.play status.currentTime
+
+  seek: (amount) ->
+    onStatus = (status) ->
+      amount = amount + status.currentTime + @httpServer.mediaOffset
+      console.log('seeking to', amount)
+      @httpServer.mediaOffsetSet(amount)
+      @chromecastWrapper.play()
+    @chromecastWrapper.getStatus(onStatus)
+
+
+manager = new Manager(conf)
+
 
   

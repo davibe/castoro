@@ -5,6 +5,7 @@ fs = require 'fs'
 srt2vtt = require 'srt2vtt'
 ffmpeg = require 'fluent-ffmpeg'
 process.env.PATH += ":/usr/local/bin"
+vttTimeTravel = require('./vtt_time_travel')
 
 allowCrossDomain = (req, res, next) ->
   res.header 'Access-Control-Allow-Origin', '*'
@@ -22,6 +23,9 @@ class HttpServer
     if verbose then app.use logger()
     app.use @handle.bind(@)
     app.listen @port
+    @mediaOffset = 0 # seconds, float
+  mediaOffsetSet: (offset) ->
+    @mediaOffset = offset
   handle: (req, res, next) ->
     ext = req.path.split('.').pop()
     if ext == 'vtt'
@@ -32,7 +36,7 @@ class HttpServer
     if @mode == 'stream-transcode'
       return @handleMediaStreamTranscode req, res, next
     if @mode == 'transcode'
-      return res.sendFile('/tmp/target.mkv')
+      return res.sendFile('/tmp/target.mkv', @mediaOffset)
   handleSubtitles: (req, res, next) ->
     tryWith = (ext) =>
       subtitles = @input.split('.')
@@ -51,6 +55,7 @@ class HttpServer
       srt2vtt srt, (err, vtt) ->
         res.status 200
         res.contentType ext
+        vtt = vttTimeTravel(vtt)
         res.send vtt
   handleMediaStreamTranscode: (req, res, next) ->
     ff = ffmpeg(@input, {})
@@ -58,6 +63,7 @@ class HttpServer
     ff.videoCodec('copy')
     ff.audioCodec('libfaac').audioBitrate('320k')
     ff.toFormat("matroska")
+    ff.seek(@mediaOffset)
     ff.pipe(res, end: true)
     ff.on 'start', (command) -> console.log "Launching ffmpeg: ", command
     ff.on 'error', (err) -> console.error err
