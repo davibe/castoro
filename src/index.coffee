@@ -1,4 +1,5 @@
 minimist = require 'minimist'
+ffmpeg = require 'fluent-ffmpeg'
 ChromecastWrapper = require './chromecast_wrapper'
 HttpServer = require './http_server'
 RemoteController = require './remote_controller'
@@ -40,7 +41,6 @@ class Manager
 
   mediaTranscode: ->
     conf = @conf
-    ffmpeg = require 'fluent-ffmpeg'
     ff = ffmpeg(conf.input, {})
     ff.inputOptions('-fix_sub_duration')
     ff.inputOptions('-threads 16')
@@ -66,7 +66,12 @@ class Manager
       console.log('seeking to', amount)
       @httpServer.mediaOffsetSet(amount)
       @chromecastWrapper.play()
-    @chromecastWrapper.getStatus(onStatus)
+    @chromecastWrapper.getStatus(onStatus.bind(@))
+
+  quit: ->
+    @chromecastWrapper.device.close()
+    setTimeout process.exit.bind(process), 1000
+    
 
 
 manager = new Manager(conf)
