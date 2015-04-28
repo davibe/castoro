@@ -47,6 +47,7 @@ class HttpServer
     ext = 'srt'
     subtitles = tryWith ext
     src = subtitles
+    self = @
     fs.stat src, (err) ->
       if err
         res.end "no subs", 404
@@ -55,15 +56,17 @@ class HttpServer
       srt2vtt srt, (err, vtt) ->
         res.status 200
         res.contentType ext
-        vtt = vttTimeTravel(vtt)
+        vtt = vttTimeTravel(vtt, self.mediaOffset)
         res.send vtt
   handleMediaStreamTranscode: (req, res, next) ->
     ff = ffmpeg(@input, {})
     ff.inputOptions('-fix_sub_duration')
     ff.videoCodec('copy')
+    ff.audioFilters('volume=2.0')
     ff.audioCodec('libfaac').audioBitrate('320k')
     ff.toFormat("matroska")
-    ff.seek(@mediaOffset)
+    if @mediaOffset
+      ff.seek(@mediaOffset)
     ff.pipe(res, end: true)
     ff.on 'start', (command) -> console.log "Launching ffmpeg: ", command
     ff.on 'error', (err) -> console.error err
