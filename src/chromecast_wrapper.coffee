@@ -78,9 +78,6 @@ class ChromecastWrapper
     onStatus = (status) ->
       @status = status
       cb(status)
-    @device.getStatus.bind(@)(cb)
-  quit: =>
-    if @ff
-      cast.ff.kill()
+    @device.getStatus.bind(@device)(onStatus.bind(@))
 
 module.exports = ChromecastWrapper
