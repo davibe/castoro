@@ -3,9 +3,9 @@ express = require 'express'
 serveStatic = require 'serve-static'
 fs = require 'fs'
 srt2vtt = require 'srt2vtt'
-ffmpeg = require 'fluent-ffmpeg'
 process.env.PATH += ":/usr/local/bin"
 vttTimeTravel = require('./vtt_time_travel')
+FFMpegRegistry = require './ffmpeg_registry'
 
 allowCrossDomain = (req, res, next) ->
   res.header 'Access-Control-Allow-Origin', '*'
@@ -59,7 +59,7 @@ class HttpServer
         vtt = vttTimeTravel(vtt, self.mediaOffset)
         res.send vtt
   handleMediaStreamTranscode: (req, res, next) ->
-    ff = ffmpeg(@input, {})
+    ff = FFMpegRegistry.get(@input, {})
     ff.inputOptions('-fix_sub_duration')
     ff.videoCodec('copy')
     ff.audioFilters('volume=2.0')

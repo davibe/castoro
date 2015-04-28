@@ -1,8 +1,8 @@
 minimist = require 'minimist'
-ffmpeg = require 'fluent-ffmpeg'
 ChromecastWrapper = require './chromecast_wrapper'
 HttpServer = require './http_server'
 RemoteController = require './remote_controller'
+FFMpegRegistry = require './ffmpeg_registry'
 
 argv = minimist(process.argv)
 
@@ -41,7 +41,7 @@ class Manager
 
   mediaTranscode: ->
     conf = @conf
-    ff = ffmpeg(conf.input, {})
+    ff = FFMpegRegistry.get(conf.input, {})
     ff.inputOptions('-fix_sub_duration')
     ff.inputOptions('-threads 16')
     ff.videoCodec('copy')
@@ -69,7 +69,9 @@ class Manager
     @chromecastWrapper.getStatus(onStatus.bind(@))
 
   quit: ->
-    @chromecastWrapper.device.close()
+    if @chromecastWrapper.device
+      @chromecastWrapper.device.close()
+    FFMpegRegistry.killAll()
     setTimeout process.exit.bind(process), 1000
     
 
