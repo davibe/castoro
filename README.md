@@ -49,7 +49,8 @@ picky about formats (expecially audio ones) the file must be properly encoded.
 #### "stream-transcode"
 
 The tool will live transcode the input file to fit chromecast audio capabilities
-using ffmpeg. At the moment this disables seeking support.
+using ffmpeg. <s>At the moment this disables seeking support.</s> Now there is
+experimental seek support.
 
 #### "transcode"
 
