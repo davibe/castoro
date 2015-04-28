@@ -35,8 +35,8 @@ class Manager
       @mediaTranscode()
 
     if conf.cli_controller
-      delayed = -> new RemoteController(@chromecastWrapper)
-      setTimeout delayed, 1000
+      delayed = -> new RemoteController(@chromecastWrapper, @)
+      setTimeout delayed.bind(@), 1000
 
   mediaTranscode: ->
     conf = @conf

@@ -1,9 +1,10 @@
 class RemoteController
-  constructor: (@player) ->
+  constructor: (@player, @manager) ->
     if process.stdin and process.stdin.setRawMode
       keypress = require 'keypress'
       keypress process.stdin
       process.stdin.setRawMode true
+      process.stdin.resume()
       process.stdin.on 'keypress', @keypress.bind(@)
   
   keypress: (ch, key) ->
@@ -29,13 +30,12 @@ class RemoteController
       if key.name == 'right'
         if key.shift
           seekAmount /= 10 # 1 minute
-        @player.seek seekAmount
+        @manager.seek seekAmount
       if key.name == 'left'
         if key.shift
           seekAmount /= 10
-        @player.seek -1 * seekAmount
+        @manager.seek -1 * seekAmount
       if key.name == 'q' or key.name == 'c'
-        @player.quit()
-        process.exit()
+        @manager.quit()
 
 module.exports = RemoteController
