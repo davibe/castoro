@@ -28,12 +28,12 @@ Usage
 Command line usage goes like this
 
       castoro \
-        --ip [ip of your machine] \
         --mode [original|stream-transcode|transcode] \
         --input [path/to/file.mkv]
 
 Optional arguments
 
+        --ip [ip of your machine]
         --port [http port to use]
         --cli-controller # enables cli controller
 

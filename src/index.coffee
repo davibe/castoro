@@ -8,7 +8,7 @@ argv = minimist(process.argv)
 
 conf =
   input: argv.input
-  ip: argv.ip
+  ip: argv.ip || false
   mode: argv.mode
   help: argv.help
   port: argv['port'] || 8123
@@ -16,11 +16,13 @@ conf =
   verbose: argv.verbose
 
 help = """
-  castoro --input path.to.file.mkv \
-    --ip [ip of your machine] \
-    --port [http port to use] \
-    --mode [original|stream-transcode|transcode] \
-    --cli-controller \
+  castoro --input path.to.file.mkv \\
+    --mode [original|stream-transcode|transcode]
+
+  Other optional arguments:
+    --ip [ip of your machine] # chromecast will connect to this ip
+    --port [http port to use] # chromecast will connect to this port
+    --cli-controller # control playback with keyboard keys
     --verbose
     """
 

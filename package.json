@@ -39,6 +39,7 @@
     "moment": "^2.10.2",
     "morgan": "^1.5.0",
     "serve-static": "^1.7.1",
-    "srt2vtt": "^1.0.0"
+    "srt2vtt": "^1.0.0",
+    "underscore": "^1.8.3"
   }
 }

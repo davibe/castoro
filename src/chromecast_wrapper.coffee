@@ -1,4 +1,5 @@
 chromecastjs = require 'chromecast-js'
+ips = require './ips'
 
 class ChromecastWrapper
   constructor: (ip, port) ->
@@ -8,7 +9,14 @@ class ChromecastWrapper
     @browser.on 'deviceOn', @deviceOn.bind(@)
     @volume = 1.0
     @status = null
-    @media =
+    @ip = ip || false
+    @port = port
+  mediaGet: () ->
+    # if we don't have an ip, pick the first candidate
+    # based on chromecast device host ip
+    ip = @ip || ips.candidates(@device.host).pop()
+    port = @port
+    media =
       url: "http://#{ip}:#{port}/target.mkv" # "http://commondatastorage.googleapis.com/gtv-videos-bucket/big_buck_bunny_1080p.mp4" #@uri
       subtitles: [
         language: 'en-US',
@@ -27,6 +35,7 @@ class ChromecastWrapper
         windowColor: '#00000000' # see http://dev.w3.org/csswg/css-color/#hex-notation
         windowRoundedCornerRadius: 10 # radius in px
         windowType: 'NONE' # can be: "NONE", "NORMAL", "ROUNDED_CORNERS"
+    return media
   deviceOn: (device) ->
     console.log 'This device is on ', device.host
     @device = device
@@ -40,8 +49,9 @@ class ChromecastWrapper
     offset = offset || 0
     if not @connected
       return console.log 'we are not connected'
-    console.log 'Going to play', @media.url
-    @device.play @media, offset, -> console.log 'play', arguments[0]
+    media = @mediaGet()
+    console.log 'Going to play', media.url
+    @device.play media, offset, -> console.log 'play', arguments[0]
   pause: =>
     if not @connected then return console.log 'we are not connected'
     @device.pause -> console.log 'pause', arguments
