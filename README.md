@@ -4,7 +4,8 @@
 Description
 -----------
 
-A commandline tool to cast local files to chromecast.
+A commandline tool to cast local files to chromecast. Experimental user
+interface is being worked on.
 
 
 Install
@@ -46,7 +47,7 @@ Optional arguments
 The tool will stream un-modified input file using HTTP. Since chromecast is
 picky about formats (expecially audio ones) the file must be properly encoded.
 
-#### "stream-transcode"
+#### "stream-transcode" (default)
 
 The tool will live transcode the input file to fit chromecast audio capabilities
 using ffmpeg. <s>At the moment this disables seeking support.</s> Now there is
@@ -65,7 +66,8 @@ The tool will
 
 ### Cli controller
 
-Use keys to control playback/volume
+If you enable the cli controller you can use keys to control playback/volume
+right from the console
 
 - Up: Volume up
 - Down: Volume down
@@ -78,10 +80,29 @@ Use keys to control playback/volume
 - key "q": Quit
 
 
-Notes
------
+### UI Controller (Experimental)
 
-I use this on OSX where I installed ffmpeg using Homebrew like this
+Experimental UI allows drag-dropping video files and control playback as a
+desktop application. See screenshots
+
+![](screenshots/ui01.PNG)
+
+Current status of UI support is
+
+- still very experimental
+- using [electron.atom.io](http://electron.atom.io)
+- tested on Mac OSX
+
+To test it you can clone this repo and then use
+
+    npm run-script prepublish; electron .
+
+
+FFMPEG dependency
+-----------------
+
+This tool uses FFMpeg. FFMpeg must be installed on the system. I run it on OSX
+where I installed ffmpeg using Homebrew like this
 
     brew install ffmpeg --with-faac --with-fdk-aac
 
@@ -91,13 +112,9 @@ Todos
 
 Pull requests are welcome
 
-- Make pause/unpause more stable
-- Figure out how to do seeking in 'stream-transcode' mode to make 'transcode'
-  useless
 - Also transcode video when needed (currently we just transcode audio)
 - Automatically figure out available port
-- Automatically figure out appropriate ip
 - Support multiple chromecasts in the same network
-- Maybe create a user interface served with express 
+- Distrubuted bundled application with UI and possibly ffmpeg binaries
 
 
