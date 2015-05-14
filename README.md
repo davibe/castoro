@@ -4,8 +4,9 @@
 Description
 -----------
 
-A commandline tool to cast local files to chromecast. Experimental user
-interface is being worked on.
+A commandline tool to cast local files to chromecast. Device discovery, volume
+control, seeking support, automatic subtitles loading based on media filename,
+audio transcoding. Experimental user interface is being worked on.
 
 
 Install
