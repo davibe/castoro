@@ -3,7 +3,6 @@ express = require 'express'
 serveStatic = require 'serve-static'
 fs = require 'fs'
 srt2vtt = require 'srt2vtt'
-process.env.PATH += ":/usr/local/bin"
 vttTimeTravel = require('./vtt_time_travel')
 FFMpegRegistry = require './ffmpeg_registry'
 
@@ -61,9 +60,10 @@ class HttpServer
   handleMediaStreamTranscode: (req, res, next) ->
     ff = FFMpegRegistry.get(@input, {})
     ff.inputOptions('-fix_sub_duration')
+    ff.inputOptions('-strict -2')
     ff.videoCodec('copy')
     ff.audioFilters('volume=2.0')
-    ff.audioCodec('libfaac').audioBitrate('320k')
+    ff.audioCodec('aac').audioBitrate('320k')
     ff.toFormat("matroska")
     if @mediaOffset
       ff.seek(@mediaOffset)

@@ -1,3 +1,8 @@
+# ffmpeg built using homebrew (has priority)
+process.env.PATH += ":/usr/local/bin/"
+# embedded ffmpeg
+process.env.PATH += ":" + __dirname + "/../bin/osx"
+
 ffmpeg = require 'fluent-ffmpeg'
 
 class FFMpegRegistry

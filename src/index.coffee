@@ -59,9 +59,10 @@ class Manager
     conf = @conf
     ff = FFMpegRegistry.get(conf.input, {})
     ff.inputOptions('-fix_sub_duration')
+    ff.inputOptions('-strict -2')
     ff.inputOptions('-threads 16')
     ff.videoCodec('copy')
-    ff.audioCodec('libfaac').audioBitrate('320k')
+    ff.audioCodec('faac').audioBitrate('320k')
     ff.toFormat("matroska")
     ff.output('/tmp/target.mkv')
     ff.on('end', @switchToTranscoded.bind(@))
