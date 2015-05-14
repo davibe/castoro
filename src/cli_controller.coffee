@@ -19,8 +19,6 @@ class RemoteController
         @player.volumeUp()
       if key.name == 'down'
         @player.volumeDown()
-      if key.name == 't'
-        @player.transcode()
       if key.name == 'p'
         @player.play()
       if key.name == 's'

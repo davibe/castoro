@@ -1,7 +1,7 @@
 minimist = require 'minimist'
 ChromecastWrapper = require './chromecast_wrapper'
 HttpServer = require './http_server'
-RemoteController = require './remote_controller'
+CliController = require './cli_controller'
 FFMpegRegistry = require './ffmpeg_registry'
 
 argv = minimist(process.argv)
@@ -9,7 +9,7 @@ argv = minimist(process.argv)
 conf =
   input: argv.input
   ip: argv.ip || false
-  mode: argv.mode
+  mode: argv.mode || 'stream-transcode'
   help: argv.help
   port: argv['port'] || 8123
   cli_controller: argv['cli-controller']
@@ -32,14 +32,28 @@ class Manager
   constructor: (conf) ->
     @conf = conf
     @chromecastWrapper = new ChromecastWrapper(conf.ip, conf.port)
-    @httpServer = new HttpServer conf.input, conf.port, conf.mode, conf.verbose
+    @httpServer = new HttpServer(conf.input, conf.port, conf.mode, conf.verbose)
+
     if conf.mode == 'transcode'
+      # strategy is to show live-transcoded version while we quickly transcode
+      # the entyre media. As soon as the full transcode is complete we resume
+      # the playback using the transcoded file and keeping plaback position
+      # (switchToTranscoded fn)
       @httpServer.mode = 'stream-transcode'
       @mediaTranscode()
 
     if conf.cli_controller
-      delayed = -> new RemoteController(@chromecastWrapper, @)
-      setTimeout delayed.bind(@), 1000
+      delayed = -> new CliController(@chromecastWrapper, @)
+      setTimeout(delayed.bind(@), 1000)
+
+    # activate ui if possible (if running inside electron.app.io)
+    @uiManager = null
+    try
+      BrowserWindow = require('browser-window')
+      if (BrowserWindow)
+        UIController = require('./ui_controller')
+        @uiController = new UIController(@chromecastWrapper, @)
+    catch e
 
   mediaTranscode: ->
     conf = @conf
@@ -61,6 +75,16 @@ class Manager
       console.log 'Switching to transcoded file'
       @httpServer.mode = 'transcode'
       self.chromecastWrapper.play status.currentTime
+
+  statusGet: (cb) ->
+    onStatus = (status) -> @statusGetOnStatus(status, cb)
+    @chromecastWrapper.getStatus(onStatus.bind(@))
+
+  statusGetOnStatus: (status, cb) ->
+    status = status || {}
+    if status.currentTime
+      status.currentTime += (@httpServer.mediaOffset || 0)
+    cb(status)
 
   seek: (amount) ->
     onStatus = (status) ->
