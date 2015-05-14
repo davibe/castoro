@@ -1,16 +1,23 @@
-![](images/castoro.png)
-
-
 Description
 -----------
 
-A commandline tool to cast local files to chromecast. Device discovery, volume
+A tool to cast your local files to chromecast. Device discovery, volume
 control, seeking support, automatic subtitles loading based on media filename,
 audio transcoding. Experimental user interface is being worked on.
 
 
-Install
--------
+Desktop application
+-------------------
+
+First binary distribution is now
+[available for OSX](http://davibe.github.io/castoro-osx/)
+
+
+Commandline tool
+----------------
+
+
+### Install
 
 You can user npm published version
     
@@ -24,8 +31,7 @@ or roll one yourself from this repo
     npm install -g
 
 
-Usage
------
+### Usage
 
 Command line usage goes like this
 
@@ -40,29 +46,18 @@ Optional arguments
         --cli-controller # enables cli controller
 
 
-### Mode(s)
+#### Mode(s) explained
 
-
-#### "original"
-
-The tool will stream un-modified input file using HTTP. Since chromecast is
+- **original**: The tool will stream un-modified input file using HTTP. Since chromecast is
 picky about formats (expecially audio ones) the file must be properly encoded.
-
-#### "stream-transcode" (default)
-
-The tool will live transcode the input file to fit chromecast audio capabilities
-using ffmpeg. <s>At the moment this disables seeking support.</s> Now there is
-experimental seek support.
-
-#### "transcode"
-
-The tool will
-
-1. start to cast the input media to the chromecast using stream-transcode mode
-   (no seeking enabled)
-2. start a transcoding process converts the entire input media
-3. as soon as the transcoding (2) is finished it will switch playback to the
-   trascoded file (seeking will be re-enabled)
+- **stream-transcode** (default): The tool will live transcode the input file to fit chromecast audio capabilities
+using ffmpeg. Seeking is supported in this case, but slower.
+- **transcode**: The tool will
+    1. start to cast the input media to the chromecast using stream-transcode mode
+       (slower seeking)
+    2. start a transcoding process converts the entire input media
+    3. as soon as the transcoding (2) is finished it will switch playback to the
+       trascoded file (faster seeking)
 
 
 ### Cli controller
@@ -107,15 +102,18 @@ where I installed ffmpeg using Homebrew like this
 
     brew install ffmpeg --with-faac --with-fdk-aac
 
+Bundled distributions of the application also include ffmpeg binaries.
 
 Todos
 -----
 
 Pull requests are welcome
 
-- Also transcode video when needed (currently we just transcode audio)
-- Automatically figure out available port
+- Transcode video when needed (currently we just transcode audio)
+- Properly report errors
+- Automatically pick an available port
 - Support multiple chromecasts in the same network
 - Distrubuted bundled application with UI and possibly ffmpeg binaries
 
 
+![](images/castoro.png)
