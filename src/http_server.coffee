@@ -41,8 +41,8 @@ class HttpServer
     tryWith = (ext) =>
       subtitles = @input.split('.')
       subtitles.pop()
-      subtitles.push ext
-      subtitles = subtitles.join '.'
+      subtitles.push(ext)
+      subtitles = subtitles.join('.')
       return subtitles
     ext = 'srt'
     subtitles = tryWith ext

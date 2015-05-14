@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Castoro</title>
+  </head>
+  <body>
+
+    <div class="droppable">Drop a file here</div>
+
+    <button onClick="ipc.sendSync('invoke', 'inputSet', file.path);">stop</button>
+    <button onClick="ipc.sendSync('invoke', 'play');">play</button>
+    <button onClick="ipc.sendSync('invoke', 'pause');">pause</button>
+    <button onClick="ipc.sendSync('invoke', 'unpause');">unpause</button>
+    <button onClick="ipc.sendSync('invoke', 'seek', -60 * 10);">rr (10m)</button>
+    <button onClick="ipc.sendSync('invoke', 'seek', -30);">rr (30s)</button>
+    <button onClick="ipc.sendSync('invoke', 'seek', 30);">ff (30s)</button>
+    <button onClick="ipc.sendSync('invoke', 'seek', 60 * 10);">ff (10m)</button>
+
+    <p style="text-align: center; font-size: small;">
+      MediaTime: <span id="currentTime"></span>
+    </p>
+    <pre><code>
+    </code></pre>
+    
+
+<style type="text/css" media="screen">
+  div.droppable {
+    text-align: center;
+    padding: 10px;
+    background-color: #eee;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  pre {
+    display: none;
+  }
+</style>
+
+<script type="text/javascript" charset="utf-8">
+  var ipc = require('ipc');
+  window.ipc = ipc;
+
+  // manage status notifications
+  ipc.on('status', function (status) {
+    var debug = document.getElementsByTagName('code')[0];
+    debug.innerHTML = JSON.stringify(status, null, '  ');
+    time = status.currentTime || 'na';
+    document.getElementById('currentTime').innerHTML = time;
+  });
+
+  // handle droppable
+  var droppable = document.getElementsByClassName('droppable')[0];
+  droppable.ondragover = function (e) {
+    e.target.style.backgroundColor = 'lightgreen';
+    return false;
+  };
+  droppable.ondragleave = droppable.ondragend = function (e) {
+    e.target.style.backgroundColor = '#eee';
+    return false;
+  };
+  droppable.ondrop = function (e) {
+    e.preventDefault();
+    e.target.style.backgroundColor = '#eee';
+    var file = e.dataTransfer.files[0];
+    var name = file.path.split('/');
+    name = name.pop();
+    e.target.innerHTML = name;
+    ipc.sendSync('invoke', 'inputSet', file.path);
+    return false;
+  };
+  
+</script>
+    
+    
+  </body>
+</html>
