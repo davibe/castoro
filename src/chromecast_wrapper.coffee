@@ -3,15 +3,16 @@ ips = require './ips'
 
 class ChromecastWrapper
   constructor: (ip, port) ->
-    @browser = new chromecastjs.Browser()
     @device = null
     @connected = false
-    @browser.on 'deviceOn', @deviceOn.bind(@)
     @volume = 1.0
-    @status = null
+    @statusLast = null
     @ip = ip || false
     @port = port
-  mediaGet: () ->
+    @browser = new chromecastjs.Browser()
+    console.log 'Looking for Chromecast devices around..'
+    @browser.on 'deviceOn', @deviceOn.bind(@)
+  mediaDescriptionGet: () ->
     # if we don't have an ip, pick the first candidate
     # based on chromecast device host ip
     ip = @ip || ips.candidates(@device.host).pop()
@@ -49,9 +50,14 @@ class ChromecastWrapper
     offset = offset || 0
     if not @connected
       return console.log 'we are not connected'
-    media = @mediaGet()
+    if @locked then return console.log 'skipping play request'
+    media = @mediaDescriptionGet()
     console.log 'Going to play', media.url
-    @device.play media, offset, -> console.log 'play', arguments[0]
+    @device.play media, offset, @playDone.bind(@)
+    @locked = true
+  playDone: ->
+    console.log 'play', arguments[0]
+    @locked = false
   pause: =>
     if not @connected then return console.log 'we are not connected'
     @device.pause -> console.log 'pause', arguments
@@ -82,12 +88,17 @@ class ChromecastWrapper
     @volume -= 0.1
     @volumeSet()
   getStatus: (cb) =>
-    last = @getStatusLast || 0
-    elapsed = Date.now() - last
-    if elapsed < 3000 then return cb(@status)
     onStatus = (status) ->
-      @status = status
+      # sometimes device returns a null status, in that case we use the last
+      # known one
+      if not status
+        status = @statusLast
+      else
+        @statusLast = status
       cb(status)
-    @device.getStatus.bind(@device)(onStatus.bind(@))
+    if not @device then return cb(null)
+    if not @device.getStatus then return cb(null)
+    if not @connected then return cb(null)
+    @device.getStatus(onStatus.bind(@))
 
 module.exports = ChromecastWrapper
