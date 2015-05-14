@@ -1,4 +1,4 @@
-![](castoro.png)
+![](images/castoro.png)
 
 
 Description
@@ -86,7 +86,7 @@ right from the console
 Experimental UI allows drag-dropping video files and control playback as a
 desktop application. See screenshots
 
-![](screenshots/ui01.PNG)
+![](images/ui01.PNG)
 
 Current status of UI support is
 
