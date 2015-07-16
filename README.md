@@ -10,7 +10,7 @@ Desktop application
 -------------------
 
 First binary distribution is now
-[available for OSX](http://davibe.github.io/castoro-osx/)
+[available for OSX](https://github.com/davibe/castoro/releases/)
 
 
 Commandline tool
